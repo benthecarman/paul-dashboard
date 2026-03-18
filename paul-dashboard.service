@@ -1,0 +1,10 @@
+[Unit]
+Description=Deploy paul-dashboard from git
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'cd /opt/paul-dashboard && git pull --ff-only origin master && rsync -a --delete index.html /var/www/paul-dashboard/'
+User=www-data
+Group=www-data
