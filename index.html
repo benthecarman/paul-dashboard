@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>futurepaul - GitHub Dashboard</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface-2: #1c2333;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --green: #3fb950;
+            --orange: #d29922;
+            --red: #f85149;
+            --purple: #bc8cff;
+            --pink: #f778ba;
+            --cyan: #39d2c0;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            padding: 2rem;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            padding: 2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            flex-shrink: 0;
+        }
+
+        .profile-info h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .profile-info h1 span {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 1.2rem;
+        }
+
+        .profile-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .profile-meta a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .profile-meta a:hover { text-decoration: underline; }
+
+        .badge {
+            display: inline-block;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .badge.hireable {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-card .label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .stat-card.accent .number { color: var(--accent); }
+        .stat-card.green .number { color: var(--green); }
+        .stat-card.orange .number { color: var(--orange); }
+        .stat-card.purple .number { color: var(--purple); }
+        .stat-card.pink .number { color: var(--pink); }
+        .stat-card.cyan .number { color: var(--cyan); }
+
+        /* Grid Layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 1000px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .profile-header { flex-direction: column; text-align: center; }
+            .profile-meta { justify-content: center; }
+        }
+
+        /* Card */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card h2 .icon {
+            font-size: 1.2rem;
+        }
+
+        /* Language Chart */
+        .lang-bar {
+            display: flex;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .lang-bar div {
+            transition: width 0.5s;
+        }
+
+        .lang-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .lang-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.85rem;
+        }
+
+        .lang-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .lang-count {
+            color: var(--text-muted);
+        }
+
+        /* Repo List */
+        .repo-item {
+            padding: 0.85rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .repo-item:last-child { border-bottom: none; }
+
+        .repo-item .repo-name {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .repo-item .repo-name:hover { text-decoration: underline; }
+
+        .repo-desc {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.15rem;
+        }
+
+        .repo-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.35rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .repo-meta .star { color: var(--orange); }
+        .repo-meta .fork-icon { color: var(--text-muted); }
+
+        .repo-lang {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 3px;
+            vertical-align: middle;
+        }
+
+        /* Timeline */
+        .timeline-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .timeline-item:last-child { border-bottom: none; }
+
+        .timeline-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            font-weight: 700;
+        }
+
+        .timeline-icon.push { background: #1f3d2e; color: var(--green); }
+        .timeline-icon.pr { background: #2a1f3d; color: var(--purple); }
+        .timeline-icon.create { background: #1f2d3d; color: var(--accent); }
+        .timeline-icon.delete { background: #3d1f1f; color: var(--red); }
+        .timeline-icon.issue { background: #3d351f; color: var(--orange); }
+        .timeline-icon.review { background: #3d1f35; color: var(--pink); }
+
+        .timeline-content { flex: 1; }
+        .timeline-repo { color: var(--accent); font-weight: 600; }
+        .timeline-time { color: var(--text-muted); font-size: 0.75rem; }
+
+        /* Activity Heatmap */
+        .activity-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .activity-repo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .activity-repo-name {
+            width: 160px;
+            font-size: 0.85rem;
+            text-align: right;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .activity-bar-container {
+            flex: 1;
+            background: var(--surface-2);
+            border-radius: 4px;
+            height: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .activity-bar {
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            min-width: 30px;
+            transition: width 0.5s;
+        }
+
+        /* Starred Repos */
+        .starred-item {
+            padding: 0.65rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .starred-item:last-child { border-bottom: none; }
+
+        .starred-name {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .starred-name:hover { text-decoration: underline; }
+
+        .starred-desc {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 0.1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Gist */
+        .gist-item {
+            padding: 0.65rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .gist-item:last-child { border-bottom: none; }
+
+        .gist-name {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .gist-name:hover { text-decoration: underline; }
+
+        .gist-files {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Focus areas */
+        .focus-tag {
+            display: inline-block;
+            padding: 0.35rem 0.8rem;
+            margin: 0.25rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+        }
+
+        .focus-tag.hot {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .focus-tag.warm {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .focus-tag.cool {
+            color: var(--text-muted);
+        }
+
+        /* Account age */
+        .account-age {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Year chart */
+        .year-chart {
+            display: flex;
+            gap: 2px;
+            align-items: flex-end;
+            height: 80px;
+            margin-top: 0.5rem;
+        }
+
+        .year-bar {
+            flex: 1;
+            background: var(--accent);
+            border-radius: 3px 3px 0 0;
+            min-width: 4px;
+            position: relative;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .year-bar:hover {
+            opacity: 1;
+        }
+
+        .year-bar:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 105%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .year-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Pulse indicator */
+        .pulse {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Scrollable card */
+        .scroll-inner {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .scroll-inner::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scroll-inner::-webkit-scrollbar-track {
+            background: var(--surface);
+        }
+
+        .scroll-inner::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .full-width {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .updated {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <img class="avatar" src="https://avatars.githubusercontent.com/u/543668?v=4" alt="Paul Miller">
+            <div class="profile-info">
+                <h1>Paul Miller <span>@futurepaul</span></h1>
+                <div style="margin-top: 0.35rem;">
+                    <span class="badge hireable">Available for hire</span>
+                    <span class="badge">Member since Jan 2011</span>
+                </div>
+                <div class="profile-meta">
+                    <span><a href="https://github.com/futurepaul" target="_blank">github.com/futurepaul</a></span>
+                    <span><a href="http://pauljmiller.com" target="_blank">pauljmiller.com</a></span>
+                    <span style="color: var(--text-muted);">paul@pauljmiller.com</span>
+                </div>
+                <div class="account-age">15+ years on GitHub &middot; Last active today</div>
+            </div>
+        </div>
+
+        <!-- Top Stats -->
+        <div class="stats-row">
+            <div class="stat-card accent">
+                <div class="number">134</div>
+                <div class="label">Public Repos</div>
+            </div>
+            <div class="stat-card green">
+                <div class="number">261</div>
+                <div class="label">Followers</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="number">56</div>
+                <div class="label">Following</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="number">366</div>
+                <div class="label">Total Stars Earned</div>
+            </div>
+            <div class="stat-card pink">
+                <div class="number">8</div>
+                <div class="label">Public Gists</div>
+            </div>
+            <div class="stat-card cyan">
+                <div class="number">10</div>
+                <div class="label">Languages Used</div>
+            </div>
+        </div>
+
+        <!-- Current Focus -->
+        <div class="card full-width">
+            <h2><span class="icon"><span class="pulse"></span></span> Current Focus &amp; Active Work</h2>
+            <p style="color: var(--text-muted); margin-bottom: 0.75rem;">Based on recent push activity and events (last 90 days):</p>
+            <div>
+                <span class="focus-tag hot">sledtools/pika (71 events)</span>
+                <span class="focus-tag hot">hypernote-mdx (16 events)</span>
+                <span class="focus-tag warm">pika fork (12 events)</span>
+            </div>
+            <p style="color: var(--text-muted); margin-top: 1rem; font-size: 0.9rem;">
+                <strong style="color: var(--text);">Right now:</strong> Actively pushing to <code style="color: var(--accent);">futurepaul/pika</code> on branch <code style="color: var(--green);">futurepaul/hypernote-desktop-phase1</code> &mdash; multiple pushes today. Also opened a PR to <code style="color: var(--accent);">sledtools/pika</code> and recently merged PRs in <code style="color: var(--accent);">hypernote-mdx</code>.
+            </p>
+        </div>
+
+        <!-- Languages + Top Repos -->
+        <div class="grid-2">
+
+            <!-- Language Breakdown -->
+            <div class="card">
+                <h2><span class="icon">&#x1F4CA;</span> Language Breakdown</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">Across 72 original (non-fork) repos</p>
+                <div class="lang-bar">
+                    <div style="width: 34.7%; background: #dea584;" title="Rust 25"></div>
+                    <div style="width: 33.3%; background: #3178c6;" title="TypeScript 24"></div>
+                    <div style="width: 8.3%; background: #f1e05a;" title="JavaScript 6"></div>
+                    <div style="width: 6.9%; background: #e34c26;" title="HTML 5"></div>
+                    <div style="width: 6.9%; background: #ec915c;" title="Zig 5"></div>
+                    <div style="width: 2.8%; background: #89e051;" title="Shell 2"></div>
+                    <div style="width: 1.4%; background: #00B4AB;" title="Dart 1"></div>
+                    <div style="width: 1.4%; background: #00ADD8;" title="Go 1"></div>
+                    <div style="width: 1.4%; background: #F05138;" title="Swift 1"></div>
+                    <div style="width: 2.8%; background: #555;" title="Other 2"></div>
+                </div>
+                <div class="lang-legend">
+                    <div class="lang-legend-item"><div class="lang-dot" style="background:#dea584;"></div> Rust <span class="lang-count">25 repos (149&#9733;)</span></div>
+                    <div class="lang-legend-item"><div class="lang-dot" style="background:#3178c6;"></div> TypeScript <span class="lang-count">24 repos (62&#9733;)</span></div>
+                    <div class="lang-legend-item"><div class="lang-dot" style="background:#f1e05a;"></div> JavaScript <span class="lang-count">6 repos (10&#9733;)</span></div>
+                    <div class="lang-legend-item"><div class="lang-dot" style="background:#e34c26;"></div> HTML <span class="lang-count">5 repos (14&#9733;)</span></div>
+                    <div class="lang-legend-item"><div class="lang-dot" style="background:#ec915c;"></div> Zig <span class="lang-count">5 repos (8&#9733;)</span></div>
+                    <div class="lang-legend-item"><div class="lang-dot" style="background:#89e051;"></div> Shell <span class="lang-count">2 repos (3&#9733;)</span></div>
+                    <div class="lang-legend-item"><div class="lang-dot" style="background:#00B4AB;"></div> Dart <span class="lang-count">1 repo (40&#9733;)</span></div>
+                    <div class="lang-legend-item"><div class="lang-dot" style="background:#00ADD8;"></div> Go <span class="lang-count">1 repo (14&#9733;)</span></div>
+                    <div class="lang-legend-item"><div class="lang-dot" style="background:#F05138;"></div> Swift <span class="lang-count">1 repo (12&#9733;)</span></div>
+                </div>
+            </div>
+
+            <!-- Top Repos by Stars -->
+            <div class="card">
+                <h2><span class="icon">&#11088;</span> Top Repos by Stars</h2>
+                <div class="scroll-inner">
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/druid-todo-tutorial" target="_blank">druid-todo-tutorial</a>
+                        <div class="repo-meta"><span class="star">&#9733; 75</span> <span><span class="repo-lang" style="background:#dea584;"></span>Rust</span> <span>6 forks</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/awesome-bitcoin-bounties" target="_blank">awesome-bitcoin-bounties</a>
+                        <div class="repo-desc">Active bitcoin bounties and related resources</div>
+                        <div class="repo-meta"><span class="star">&#9733; 53</span> <span>1 fork</span> <span class="badge" style="font-size:0.7rem;">archived</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/fluttermint" target="_blank">fluttermint</a>
+                        <div class="repo-meta"><span class="star">&#9733; 40</span> <span><span class="repo-lang" style="background:#00B4AB;"></span>Dart</span> <span>10 forks</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/nostr-rs" target="_blank">nostr-rs</a>
+                        <div class="repo-desc">A non-functional Rust implementation of the nostr protocol</div>
+                        <div class="repo-meta"><span class="star">&#9733; 29</span> <span><span class="repo-lang" style="background:#dea584;"></span>Rust</span> <span>6 forks</span> <span class="badge" style="font-size:0.7rem;">archived</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/hypernote" target="_blank">hypernote</a>
+                        <div class="repo-meta"><span class="star">&#9733; 24</span> <span><span class="repo-lang" style="background:#3178c6;"></span>TypeScript</span> <span><a href="https://www.hypernote.club" target="_blank" style="color:var(--accent);">hypernote.club</a></span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/addressless" target="_blank">addressless</a>
+                        <div class="repo-desc">Serverless Lightning Address server</div>
+                        <div class="repo-meta"><span class="star">&#9733; 14</span> <span><span class="repo-lang" style="background:#00ADD8;"></span>Go</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/BdkSwiftSample" target="_blank">BdkSwiftSample</a>
+                        <div class="repo-meta"><span class="star">&#9733; 12</span> <span><span class="repo-lang" style="background:#F05138;"></span>Swift</span> <span>8 forks</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/hypernote-elements" target="_blank">hypernote-elements</a>
+                        <div class="repo-meta"><span class="star">&#9733; 7</span> <span><span class="repo-lang" style="background:#3178c6;"></span>TypeScript</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Heatmap + Recent Activity -->
+        <div class="grid-2">
+
+            <!-- Activity by Repo (recent events) -->
+            <div class="card">
+                <h2><span class="icon">&#x1F525;</span> Recent Activity by Repo</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Events from the last 90 days</p>
+                <div class="activity-grid">
+                    <div class="activity-repo">
+                        <div class="activity-repo-name">sledtools/pika</div>
+                        <div class="activity-bar-container">
+                            <div class="activity-bar" style="width: 100%; background: linear-gradient(90deg, var(--green), var(--accent));">71</div>
+                        </div>
+                    </div>
+                    <div class="activity-repo">
+                        <div class="activity-repo-name">hypernote-mdx</div>
+                        <div class="activity-bar-container">
+                            <div class="activity-bar" style="width: 22.5%; background: linear-gradient(90deg, var(--purple), var(--pink));">16</div>
+                        </div>
+                    </div>
+                    <div class="activity-repo">
+                        <div class="activity-repo-name">futurepaul/pika</div>
+                        <div class="activity-bar-container">
+                            <div class="activity-bar" style="width: 16.9%; background: linear-gradient(90deg, var(--orange), var(--red));">12</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 0.95rem; margin-top: 1.5rem; margin-bottom: 0.75rem;">Event Types</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    <span class="focus-tag" style="border-color: var(--green); color: var(--green);">Push</span>
+                    <span class="focus-tag" style="border-color: var(--purple); color: var(--purple);">Pull Request</span>
+                    <span class="focus-tag" style="border-color: var(--accent); color: var(--accent);">Create Branch</span>
+                    <span class="focus-tag" style="border-color: var(--red); color: var(--red);">Delete Branch</span>
+                    <span class="focus-tag" style="border-color: var(--orange); color: var(--orange);">Issue Comment</span>
+                    <span class="focus-tag" style="border-color: var(--pink); color: var(--pink);">PR Review</span>
+                </div>
+            </div>
+
+            <!-- Recent Activity Timeline -->
+            <div class="card">
+                <h2><span class="icon">&#x1F552;</span> Recent Activity Timeline</h2>
+                <div class="scroll-inner" style="max-height: 420px;">
+                    <div class="timeline-item">
+                        <div class="timeline-icon push">P</div>
+                        <div class="timeline-content">
+                            Pushed to <span class="timeline-repo">futurepaul/pika</span>
+                            <br><code style="font-size:0.75rem; color: var(--green);">futurepaul/hypernote-desktop-phase1</code>
+                            <div class="timeline-time">Mar 18, 2026 &middot; 5:53 PM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon push">P</div>
+                        <div class="timeline-content">
+                            Pushed to <span class="timeline-repo">futurepaul/pika</span>
+                            <br><code style="font-size:0.75rem; color: var(--green);">futurepaul/hypernote-desktop-phase1</code>
+                            <div class="timeline-time">Mar 18, 2026 &middot; 5:36 PM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon push">P</div>
+                        <div class="timeline-content">
+                            Pushed to <span class="timeline-repo">futurepaul/pika</span>
+                            <br><code style="font-size:0.75rem; color: var(--green);">futurepaul/hypernote-desktop-phase1</code>
+                            <div class="timeline-time">Mar 18, 2026 &middot; 5:04 PM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon pr">PR</div>
+                        <div class="timeline-content">
+                            Opened PR on <span class="timeline-repo">sledtools/pika</span>
+                            <div class="timeline-time">Mar 18, 2026 &middot; 12:17 AM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon create">+</div>
+                        <div class="timeline-content">
+                            Created branch <code style="font-size:0.75rem; color: var(--accent);">futurepaul/hypernote-desktop-phase1</code> on <span class="timeline-repo">futurepaul/pika</span>
+                            <div class="timeline-time">Mar 18, 2026 &middot; 12:17 AM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon push">P</div>
+                        <div class="timeline-content">
+                            Pushed to <span class="timeline-repo">futurepaul/hypernote-mdx</span>
+                            <br><code style="font-size:0.75rem; color: var(--green);">master</code>
+                            <div class="timeline-time">Mar 17, 2026 &middot; 8:54 PM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon pr">PR</div>
+                        <div class="timeline-content">
+                            Merged PR on <span class="timeline-repo">futurepaul/hypernote-mdx</span>
+                            <br><code style="font-size:0.75rem; color: var(--purple);">codex/mdx-tdd-hardening-fuzz</code>
+                            <div class="timeline-time">Mar 17, 2026 &middot; 7:47 PM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon pr">PR</div>
+                        <div class="timeline-content">
+                            Opened PR on <span class="timeline-repo">futurepaul/hypernote-mdx</span>
+                            <br><code style="font-size:0.75rem; color: var(--purple);">codex/mdx-tdd-hardening-fuzz</code>
+                            <div class="timeline-time">Mar 17, 2026 &middot; 7:35 PM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon pr">PR</div>
+                        <div class="timeline-content">
+                            Merged PR on <span class="timeline-repo">futurepaul/hypernote-mdx</span>
+                            <br><code style="font-size:0.75rem; color: var(--purple);">pr/all-today-autoresearch</code>
+                            <div class="timeline-time">Mar 17, 2026 &middot; 1:16 AM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon pr">PR</div>
+                        <div class="timeline-content">
+                            Opened PR on <span class="timeline-repo">futurepaul/hypernote-mdx</span>
+                            <br><code style="font-size:0.75rem; color: var(--purple);">pr/all-today-autoresearch</code>
+                            <div class="timeline-time">Mar 14, 2026 &middot; 5:35 PM</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon delete">-</div>
+                        <div class="timeline-content">
+                            Deleted branch on <span class="timeline-repo">sledtools/pika</span>
+                            <br><code style="font-size:0.75rem; color: var(--red);">pika-news-llms-txt</code>
+                            <div class="timeline-time">Mar 11, 2026</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon pr">PR</div>
+                        <div class="timeline-content">
+                            Merged PR on <span class="timeline-repo">sledtools/pika</span>
+                            <div class="timeline-time">Mar 10, 2026</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Projects + Repo Creation Timeline -->
+        <div class="grid-2">
+
+            <!-- Active Projects -->
+            <div class="card">
+                <h2><span class="icon">&#x1F680;</span> Active Projects (2025-2026)</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.75rem;">Non-fork, non-archived repos with recent pushes</p>
+                <div class="scroll-inner">
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/hypernote-mdx" target="_blank">hypernote-mdx</a>
+                        <div class="repo-desc">Rust MDX parser for the hypernote format</div>
+                        <div class="repo-meta"><span><span class="repo-lang" style="background:#dea584;"></span>Rust</span> <span>Pushed Mar 17</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/hypernote-pages" target="_blank">hypernote-pages</a>
+                        <div class="repo-meta"><span><span class="repo-lang" style="background:#3178c6;"></span>TypeScript</span> <span>Pushed Feb 10</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/blup" target="_blank">blup</a>
+                        <div class="repo-meta"><span class="star">&#9733; 3</span> <span><span class="repo-lang" style="background:#3178c6;"></span>TypeScript</span> <span>Pushed Feb 7</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/chin" target="_blank">chin</a>
+                        <div class="repo-meta"><span class="star">&#9733; 2</span> <span><span class="repo-lang" style="background:#ec915c;"></span>Zig</span> <span>Pushed Jan 26</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/zello" target="_blank">zello</a>
+                        <div class="repo-meta"><span class="star">&#9733; 1</span> <span><span class="repo-lang" style="background:#ec915c;"></span>Zig</span> <span>Pushed Jan 15</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/html6" target="_blank">html6</a>
+                        <div class="repo-meta"><span><span class="repo-lang" style="background:#dea584;"></span>Rust</span> <span>Pushed Jan 15</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/innpub" target="_blank">innpub</a>
+                        <div class="repo-meta"><span class="star">&#9733; 3</span> <span><span class="repo-lang" style="background:#3178c6;"></span>TypeScript</span> <span>Pushed Nov 12</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/dialog-final-v2" target="_blank">dialog-final-v2</a>
+                        <div class="repo-meta"><span><span class="repo-lang" style="background:#dea584;"></span>Rust</span> <span>Pushed Oct 3</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/hypernote-os" target="_blank">hypernote-os</a>
+                        <div class="repo-meta"><span class="star">&#9733; 4</span> <span><span class="repo-lang" style="background:#3178c6;"></span>TypeScript</span> <span>Pushed Sep 26</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/vibe" target="_blank">vibe</a>
+                        <div class="repo-desc">Git worktree automation with Claude Code integration</div>
+                        <div class="repo-meta"><span class="star">&#9733; 3</span> <span><span class="repo-lang" style="background:#89e051;"></span>Shell</span> <span>Pushed Sep 17</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/hypernote-elements" target="_blank">hypernote-elements</a>
+                        <div class="repo-meta"><span class="star">&#9733; 7</span> <span><span class="repo-lang" style="background:#3178c6;"></span>TypeScript</span> <span>Pushed Sep 5</span></div>
+                    </div>
+                    <div class="repo-item">
+                        <a class="repo-name" href="https://github.com/futurepaul/nostr_zig" target="_blank">nostr_zig</a>
+                        <div class="repo-meta"><span class="star">&#9733; 4</span> <span><span class="repo-lang" style="background:#ec915c;"></span>Zig</span> <span>Pushed Sep 3</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interests (Starred Repos) -->
+            <div class="card">
+                <h2><span class="icon">&#x2B50;</span> Recently Starred (Interests)</h2>
+                <div class="scroll-inner">
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/blackboardsh/electrobun" target="_blank">blackboardsh/electrobun</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 10,206</span>
+                        <div class="starred-desc">Build ultra fast, tiny, and cross-platform desktop apps with Typescript.</div>
+                    </div>
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/anomalyco/opentui" target="_blank">anomalyco/opentui</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 9,482</span>
+                        <div class="starred-desc">OpenTUI - library for building terminal user interfaces (TUIs)</div>
+                    </div>
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/lalinsky/zio" target="_blank">lalinsky/zio</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 409</span>
+                        <div class="starred-desc">Async I/O framework for Zig</div>
+                    </div>
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/johan0A/clay-zig-bindings" target="_blank">johan0A/clay-zig-bindings</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 202</span>
+                        <div class="starred-desc">Zig bindings for Clay: high performance UI layout library</div>
+                    </div>
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/Lulzx/zs3" target="_blank">Lulzx/zs3</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 164</span>
+                        <div class="starred-desc">S3-compatible storage in Zig. Zero dependencies.</div>
+                    </div>
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/joeldrapper/maskicons" target="_blank">joeldrapper/maskicons</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 153</span>
+                        <div class="starred-desc">Maskicons</div>
+                    </div>
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/rust-multiplatform/rmp" target="_blank">rust-multiplatform/rmp</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 91</span>
+                        <div class="starred-desc">Rust multiplatform</div>
+                    </div>
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/Deins/llama.cpp.zig" target="_blank">Deins/llama.cpp.zig</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 69</span>
+                        <div class="starred-desc">llama.cpp bindings and utilities for zig</div>
+                    </div>
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/jb55/binmoji" target="_blank">jb55/binmoji</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 59</span>
+                        <div class="starred-desc">A compact, lossless, 64-bit emoji encoding</div>
+                    </div>
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/sledtools/pika" target="_blank">sledtools/pika</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 39</span>
+                        <div class="starred-desc">Pika (sledtools)</div>
+                    </div>
+                    <div class="starred-item">
+                        <a class="starred-name" href="https://github.com/tiero/claw-cash" target="_blank">tiero/claw-cash</a> <span style="color:var(--orange); font-size:0.8rem;">&#9733; 27</span>
+                        <div class="starred-desc">Bitcoin wallet for AI agents. Stablecoins in, Bitcoin out.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Themes & Patterns + Gists -->
+        <div class="grid-2">
+
+            <!-- Key Themes -->
+            <div class="card">
+                <h2><span class="icon">&#x1F9E9;</span> Key Themes &amp; Domain Expertise</h2>
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 0.9rem; color: var(--orange); margin-bottom: 0.5rem;">Bitcoin / Lightning</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Extensive work in the Bitcoin ecosystem: <strong style="color:var(--text);">fluttermint</strong> (Dart mobile wallet, 40&#9733;), <strong style="color:var(--text);">awesome-bitcoin-bounties</strong> (53&#9733;), <strong style="color:var(--text);">BdkSwiftSample</strong> (Swift BDK), <strong style="color:var(--text);">addressless</strong> (Serverless Lightning Address), and multiple Nostr-related projects.
+                    </p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 0.9rem; color: var(--purple); margin-bottom: 0.5rem;">Hypernote Ecosystem</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Primary current project: <strong style="color:var(--text);">hypernote</strong> (24&#9733;, <a href="https://www.hypernote.club" target="_blank" style="color:var(--accent);">hypernote.club</a>), plus <strong style="color:var(--text);">hypernote-mdx</strong> (Rust MDX parser), <strong style="color:var(--text);">hypernote-elements</strong>, <strong style="color:var(--text);">hypernote-os</strong>, <strong style="color:var(--text);">hypernote-pages</strong>, and <strong style="color:var(--text);">hypernote-stories</strong>. Active development with Codex-assisted TDD.
+                    </p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 0.9rem; color: var(--green); margin-bottom: 0.5rem;">Nostr Protocol</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        <strong style="color:var(--text);">nostr-rs</strong> (29&#9733;), <strong style="color:var(--text);">nostr_zig</strong>, <strong style="color:var(--text);">zapple-pay-frontend</strong>, <strong style="color:var(--text);">innpub</strong>, <strong style="color:var(--text);">pyramid-stream</strong> (P2P streaming via Nostr+WebRTC).
+                    </p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <h3 style="font-size: 0.9rem; color: var(--accent); margin-bottom: 0.5rem;">Systems / Low-level</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Growing Zig portfolio: <strong style="color:var(--text);">chin</strong>, <strong style="color:var(--text);">zello</strong>, <strong style="color:var(--text);">zig-mdx</strong>, <strong style="color:var(--text);">nostr_zig</strong>, <strong style="color:var(--text);">mls_zig</strong>. Strong Rust background across many projects. Interested in llama.cpp Zig bindings and async I/O.
+                    </p>
+                </div>
+                <div>
+                    <h3 style="font-size: 0.9rem; color: var(--cyan); margin-bottom: 0.5rem;">AI / Agent Tooling</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        <strong style="color:var(--text);">vibe</strong> (Git worktree + Claude Code), <strong style="color:var(--text);">prompt-buddy</strong> (4&#9733;), <strong style="color:var(--text);">how-to-make-an-agent</strong>, <strong style="color:var(--text);">cvm-rust-mcp</strong>. Uses Codex for automated PRs in hypernote-mdx.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Gists + Account Timeline -->
+            <div class="card">
+                <h2><span class="icon">&#x1F4DD;</span> Gists</h2>
+                <div style="margin-bottom: 1.5rem;">
+                    <div class="gist-item">
+                        <a class="gist-name" href="https://gist.github.com/futurepaul/e4f099c8689815f394e8a2299ce78f26" target="_blank">Code on tape (meta)</a>
+                        <div class="gist-files">audioplayer.js, play.js, record.js &middot; Mar 2020</div>
+                    </div>
+                    <div class="gist-item">
+                        <a class="gist-name" href="https://gist.github.com/futurepaul/a82cf17d3bde103505261d53a54b30b1" target="_blank">how to make a button</a>
+                        <div class="gist-files">layout.md &middot; Aug 2019</div>
+                    </div>
+                    <div class="gist-item">
+                        <a class="gist-name" href="https://gist.github.com/futurepaul/7c09ce3491dcfb9ca103bc46127435d4" target="_blank">example usage of miniscript</a>
+                        <div class="gist-files">example.rs &middot; Jun 2019</div>
+                    </div>
+                    <div class="gist-item">
+                        <a class="gist-name" href="https://gist.github.com/futurepaul/b8090d504137ed9013048a8de7678ec4" target="_blank">The "Why'd you push that button" button</a>
+                        <div class="gist-files">whynot.py &middot; Mar 2018</div>
+                    </div>
+                    <div class="gist-item">
+                        <a class="gist-name" href="https://gist.github.com/futurepaul/212c8b7b3fdda16d5d24" target="_blank">rock paper scissors</a>
+                        <div class="gist-files">rps.clj &middot; Jan 2015</div>
+                    </div>
+                    <div class="gist-item">
+                        <a class="gist-name" href="https://gist.github.com/futurepaul/8b99d502006cf8a67a93" target="_blank">The biblical flood, in Swift</a>
+                        <div class="gist-files">Flood.swift &middot; Jun 2014</div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 1rem;"><span class="icon">&#x1F4C5;</span> Repo Creation by Year</h2>
+                <div class="year-chart" id="yearChart"></div>
+                <div class="year-labels" id="yearLabels"></div>
+            </div>
+        </div>
+
+        <!-- Full Repo Table -->
+        <div class="card full-width" style="margin-top: 1.5rem;">
+            <h2><span class="icon">&#x1F4C2;</span> All Original Repositories (non-fork)</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">Sorted by most recently pushed</p>
+            <div class="scroll-inner" style="max-height: 600px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                            <th style="padding: 0.5rem;">Repo</th>
+                            <th style="padding: 0.5rem;">Language</th>
+                            <th style="padding: 0.5rem; text-align: center;">Stars</th>
+                            <th style="padding: 0.5rem;">Last Push</th>
+                            <th style="padding: 0.5rem;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repoTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="updated">
+            Dashboard generated on March 18, 2026 &middot; Data from GitHub API &middot; <a href="https://github.com/futurepaul" target="_blank" style="color: var(--accent);">View on GitHub</a>
+        </div>
+    </div>
+
+    <script>
+        // Repo data
+        const repos = [
+            { name: "hypernote-mdx", lang: "Rust", langColor: "#dea584", stars: 0, pushed: "2026-03-17", desc: "Rust MDX parser for the hypernote format" },
+            { name: "hypernote-pages", lang: "TypeScript", langColor: "#3178c6", stars: 0, pushed: "2026-02-10" },
+            { name: "blup", lang: "TypeScript", langColor: "#3178c6", stars: 3, pushed: "2026-02-07" },
+            { name: "chin", lang: "Zig", langColor: "#ec915c", stars: 2, pushed: "2026-01-26" },
+            { name: "zello", lang: "Zig", langColor: "#ec915c", stars: 1, pushed: "2026-01-15" },
+            { name: "html6", lang: "Rust", langColor: "#dea584", stars: 0, pushed: "2026-01-15" },
+            { name: "innpub", lang: "TypeScript", langColor: "#3178c6", stars: 3, pushed: "2025-11-12" },
+            { name: "zig-mdx", lang: "Zig", langColor: "#ec915c", stars: 1, pushed: "2025-12-08" },
+            { name: "hypernote-pages-old", lang: "TypeScript", langColor: "#3178c6", stars: 0, pushed: "2025-10-11" },
+            { name: "zig-nostr-loader", lang: "TypeScript", langColor: "#3178c6", stars: 1, pushed: "2025-10-11" },
+            { name: "cvm-rust-mcp", lang: "Rust", langColor: "#dea584", stars: 0, pushed: "2025-10-08" },
+            { name: "wally", lang: "Rust", langColor: "#dea584", stars: 0, pushed: "2025-10-07" },
+            { name: "dialog-final-v2", lang: "Rust", langColor: "#dea584", stars: 0, pushed: "2025-10-03" },
+            { name: "hypernote-os", lang: "TypeScript", langColor: "#3178c6", stars: 4, pushed: "2025-09-26" },
+            { name: "hypersauce", lang: "TypeScript", langColor: "#3178c6", stars: 0, pushed: "2025-09-26" },
+            { name: "vibe", lang: "Shell", langColor: "#89e051", stars: 3, pushed: "2025-09-17", desc: "Git worktree automation with Claude Code" },
+            { name: "hypermedia-starter", lang: "TypeScript", langColor: "#3178c6", stars: 0, pushed: "2025-09-17" },
+            { name: "how-to-make-an-agent", lang: "TypeScript", langColor: "#3178c6", stars: 0, pushed: "2025-09-10" },
+            { name: "pyramid-stream", lang: "JavaScript", langColor: "#f1e05a", stars: 1, pushed: "2025-09-08", desc: "P2P streaming via Nostr + WebRTC" },
+            { name: "hypernote-elements", lang: "TypeScript", langColor: "#3178c6", stars: 7, pushed: "2025-09-05" },
+            { name: "nostr_zig", lang: "Zig", langColor: "#ec915c", stars: 4, pushed: "2025-09-03" },
+            { name: "dialog", lang: "Rust", langColor: "#dea584", stars: 0, pushed: "2025-09-03" },
+            { name: "hypernote-stories", lang: "TypeScript", langColor: "#3178c6", stars: 0, pushed: "2025-09-02" },
+            { name: "flappy-bird", lang: "HTML", langColor: "#e34c26", stars: 0, pushed: "2025-07-28" },
+            { name: "mls_zig", lang: "Zig", langColor: "#ec915c", stars: 0, pushed: "2025-07-11" },
+            { name: "popow", lang: "TypeScript", langColor: "#3178c6", stars: 0, pushed: "2025-07-10" },
+            { name: "hooks", lang: "Shell", langColor: "#89e051", stars: 0, pushed: "2025-07-09" },
+            { name: "hypernote-md", lang: "TypeScript", langColor: "#3178c6", stars: 0, pushed: "2025-05-08" },
+            { name: "pleblab-2025-slaps-roof-of-workshop", lang: "Rust", langColor: "#dea584", stars: 1, pushed: "2025-04-28" },
+            { name: "spending", lang: "TypeScript", langColor: "#3178c6", stars: 0, pushed: "2025-02-12" },
+            { name: "prompt-buddy", lang: "TypeScript", langColor: "#3178c6", stars: 4, pushed: "2025-02-14", desc: "A buddy for making prooompts" },
+            { name: "hypernote", lang: "TypeScript", langColor: "#3178c6", stars: 24, pushed: "2025-01-22", desc: "hypernote.club" },
+            { name: "zapple-pay-frontend", lang: "TypeScript", langColor: "#3178c6", stars: 3, pushed: "2024-01-15" },
+            { name: "BdkSwiftSample", lang: "Swift", langColor: "#F05138", stars: 12, pushed: "2023-05-01" },
+            { name: "fluttermint", lang: "Dart", langColor: "#00B4AB", stars: 40, pushed: "2022-11-24" },
+            { name: "nostr-rs", lang: "Rust", langColor: "#dea584", stars: 29, pushed: "2023-03-29", archived: true, desc: "Nostr protocol in Rust" },
+            { name: "awesome-bitcoin-bounties", lang: null, langColor: "#555", stars: 53, pushed: "2022-05-23", archived: true, desc: "Active bitcoin bounties" },
+            { name: "druid-todo-tutorial", lang: "Rust", langColor: "#dea584", stars: 75, pushed: "2021-06-19" },
+            { name: "addressless", lang: "Go", langColor: "#00ADD8", stars: 14, pushed: "2021-09-19", desc: "Serverless Lightning Address" },
+        ];
+
+        // Populate repo table
+        const tbody = document.getElementById('repoTable');
+        repos.forEach(r => {
+            const now = new Date();
+            const pushed = new Date(r.pushed);
+            const diffDays = Math.floor((now - pushed) / (1000 * 60 * 60 * 24));
+            let freshness = '';
+            if (diffDays < 7) freshness = '<span style="color:var(--green);">This week</span>';
+            else if (diffDays < 30) freshness = '<span style="color:var(--green);">This month</span>';
+            else if (diffDays < 90) freshness = '<span style="color:var(--accent);">Recent</span>';
+            else if (diffDays < 365) freshness = '<span style="color:var(--text-muted);">This year</span>';
+            else freshness = '<span style="color:var(--text-muted);">Older</span>';
+
+            if (r.archived) freshness = '<span style="color:var(--red);">Archived</span>';
+
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid var(--border)';
+            tr.innerHTML = `
+                <td style="padding:0.5rem;">
+                    <a href="https://github.com/futurepaul/${r.name}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:600;">${r.name}</a>
+                    ${r.desc ? `<div style="color:var(--text-muted); font-size:0.75rem;">${r.desc}</div>` : ''}
+                </td>
+                <td style="padding:0.5rem;">${r.lang ? `<span class="repo-lang" style="background:${r.langColor};"></span>${r.lang}` : '-'}</td>
+                <td style="padding:0.5rem; text-align:center; color:${r.stars > 0 ? 'var(--orange)' : 'var(--text-muted)'};">${r.stars > 0 ? '&#9733; ' + r.stars : '-'}</td>
+                <td style="padding:0.5rem; color:var(--text-muted);">${r.pushed}</td>
+                <td style="padding:0.5rem;">${freshness}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Year chart - repos created per year
+        const creationYears = {
+            2011: 1, 2012: 2, 2013: 3, 2014: 5, 2015: 4, 2016: 3, 2017: 2, 2018: 4, 2019: 7, 2020: 8,
+            2021: 14, 2022: 13, 2023: 10, 2024: 12, 2025: 28, 2026: 5
+        };
+
+        const maxRepos = Math.max(...Object.values(creationYears));
+        const yearChart = document.getElementById('yearChart');
+        const yearLabels = document.getElementById('yearLabels');
+
+        Object.entries(creationYears).forEach(([year, count]) => {
+            const bar = document.createElement('div');
+            bar.className = 'year-bar';
+            bar.style.height = `${(count / maxRepos) * 100}%`;
+            bar.setAttribute('data-tooltip', `${year}: ${count} repos`);
+
+            if (parseInt(year) >= 2025) bar.style.background = 'var(--green)';
+            else if (parseInt(year) >= 2023) bar.style.background = 'var(--accent)';
+            else bar.style.background = 'var(--purple)';
+
+            yearChart.appendChild(bar);
+        });
+
+        Object.keys(creationYears).forEach((year, i) => {
+            if (i % 3 === 0 || year === '2026') {
+                const label = document.createElement('span');
+                label.textContent = year;
+                yearLabels.appendChild(label);
+            }
+        });
+    </script>
+</body>
+</html>
